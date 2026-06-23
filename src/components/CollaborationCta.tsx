@@ -105,7 +105,7 @@ export function CollaborationCta({ email }: CollaborationCtaProps) {
             setDismissed(false);
             setOpen(true);
           }}
-          className="fixed bottom-6 left-6 z-30 border border-white/20 bg-black/80 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/70 backdrop-blur-sm transition-colors hover:border-white/40 hover:text-white"
+          className="fixed bottom-6 right-20 z-30 border border-white/20 bg-black/80 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/70 backdrop-blur-sm transition-colors hover:border-white/40 hover:text-white"
         >
           Murals
         </button>
