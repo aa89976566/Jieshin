@@ -24,10 +24,11 @@ export function useViewportScrollSpy({
 
     const measure = () => {
       rafRef.current = null;
-      const items = document.querySelectorAll<HTMLElement>(itemSelector);
+      const container = containerRef?.current ?? null;
+      const root = container ?? document;
+      const items = root.querySelectorAll<HTMLElement>(itemSelector);
       if (!items.length) return;
 
-      const container = containerRef?.current;
       const centerY = container
         ? container.getBoundingClientRect().top + container.clientHeight / 2
         : window.innerHeight / 2;
@@ -66,6 +67,7 @@ export function useViewportScrollSpy({
 
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule, { passive: true });
+    window.visualViewport?.addEventListener("resize", schedule);
 
     const container = containerRef?.current;
     container?.addEventListener("scroll", schedule, { passive: true });
@@ -74,7 +76,7 @@ export function useViewportScrollSpy({
       typeof ResizeObserver !== "undefined" && container
         ? new ResizeObserver(schedule)
         : null;
-    resizeObserver?.observe(container!);
+    if (container) resizeObserver?.observe(container);
 
     const mutationObserver =
       typeof MutationObserver !== "undefined"
@@ -85,13 +87,17 @@ export function useViewportScrollSpy({
       subtree: true,
     });
 
-    document.querySelectorAll<HTMLImageElement>(`${itemSelector} img`).forEach((img) => {
+    const images = (container ?? document).querySelectorAll<HTMLImageElement>(
+      `${itemSelector} img`,
+    );
+    images.forEach((img) => {
       if (!img.complete) img.addEventListener("load", schedule, { once: true });
     });
 
     return () => {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      window.visualViewport?.removeEventListener("resize", schedule);
       container?.removeEventListener("scroll", schedule);
       resizeObserver?.disconnect();
       mutationObserver?.disconnect();

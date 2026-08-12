@@ -36,17 +36,17 @@ export function HomeShell({ data }: HomeShellProps) {
   const activeSlide = slides[activeIndex] ?? slides[0];
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[420px_1fr]">
-      <aside className="sidebar-panel relative z-20 flex min-h-screen flex-col">
-        <header className="border-b border-white/10 px-6 pb-6 pt-8">
-          <h1 className="text-[3.25rem] font-semibold leading-[0.9] tracking-[-0.05em] text-white">
+    <div className="flex min-h-dvh flex-col lg:grid lg:min-h-screen lg:grid-cols-[420px_1fr]">
+      <aside className="sidebar-panel relative z-20 order-2 flex min-h-0 flex-1 flex-col border-t border-white/10 lg:order-none lg:min-h-screen lg:border-t-0">
+        <header className="shrink-0 border-b border-white/10 px-5 pb-5 pt-6 sm:px-6 sm:pb-6 sm:pt-8">
+          <h1 className="text-[2.75rem] font-semibold leading-[0.9] tracking-[-0.05em] text-white sm:text-[3.25rem]">
             {data.artist.name_en}
           </h1>
           <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.25em] text-white/60">
             {data.artist.name_zh}
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-2">
+          <div className="mt-6 flex flex-wrap gap-2 sm:mt-8">
             <Link
               href={`mailto:${data.artist.email}`}
               className="rounded-full border border-white/50 px-4 py-1.5 font-mono text-[11px] uppercase tracking-wider text-white transition-colors hover:bg-white hover:text-black"
@@ -64,7 +64,7 @@ export function HomeShell({ data }: HomeShellProps) {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-6 py-2">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-2 sm:px-6">
           <ul className="divide-y divide-white/10 pb-4">
             {data.works.map((work, index) => {
               const isActive = activeIndex === index + 1;
@@ -80,6 +80,7 @@ export function HomeShell({ data }: HomeShellProps) {
                     onFocus={() => setActiveIndex(index + 1)}
                     onMouseLeave={() => setActiveIndex(0)}
                     onBlur={() => setActiveIndex(0)}
+                    onTouchStart={() => setActiveIndex(index + 1)}
                   >
                     <div className="min-w-0">
                       <p className="font-mono text-[11px] text-white/55">
@@ -100,7 +101,7 @@ export function HomeShell({ data }: HomeShellProps) {
         </div>
       </aside>
 
-      <div className="image-stage order-first h-[42vh] lg:order-none lg:fixed lg:left-[420px] lg:right-0 lg:top-0 lg:h-screen">
+      <div className="image-stage order-1 h-[42vh] shrink-0 lg:order-none lg:fixed lg:left-[420px] lg:right-0 lg:top-0 lg:h-screen">
         <ImageViewport src={activeSlide.src} alt={activeSlide.title} />
       </div>
 

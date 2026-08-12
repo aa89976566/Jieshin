@@ -44,7 +44,10 @@ function scrollImageIntoStage(
   figure: HTMLElement,
   smooth: boolean,
 ) {
-  const figureCenter = figure.offsetTop + figure.offsetHeight / 2;
+  const stageRect = stage.getBoundingClientRect();
+  const figureRect = figure.getBoundingClientRect();
+  const figureCenter =
+    figureRect.top - stageRect.top + stage.scrollTop + figureRect.height / 2;
   const nextTop = figureCenter - stage.clientHeight / 2;
 
   stage.scrollTo({
@@ -132,17 +135,21 @@ export function NarrativeWorkView({
   );
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[420px_1fr]">
-      <aside className="sidebar-panel relative z-20 flex max-h-screen flex-col">
-        <header className="border-b border-white/10 px-6 pb-6 pt-8">
+    <div className="flex h-dvh flex-col overflow-hidden lg:grid lg:h-auto lg:min-h-screen lg:grid-cols-[420px_1fr] lg:overflow-visible">
+      {/*
+        Mobile: image stage on top + text below in one viewport (mirrors desktop dual-pane sync).
+        Desktop: sidebar left, fixed image stage right.
+      */}
+      <aside className="sidebar-panel relative z-20 order-2 flex min-h-0 flex-1 flex-col border-t border-white/10 lg:order-none lg:max-h-screen lg:border-t-0">
+        <header className="shrink-0 border-b border-white/10 px-5 pb-4 pt-5 sm:px-6 sm:pb-6 sm:pt-8">
           <Link
             href="/"
             className="font-mono text-[11px] uppercase tracking-widest text-white/60 transition-colors hover:text-white"
           >
             ← Back
           </Link>
-          <p className="mt-6 font-mono text-[11px] text-white/55">{year}</p>
-          <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-[-0.03em] text-white">
+          <p className="mt-4 font-mono text-[11px] text-white/55 sm:mt-6">{year}</p>
+          <h1 className="mt-2 text-2xl font-semibold leading-tight tracking-[-0.03em] text-white sm:text-3xl">
             {title}
           </h1>
           <p className="mt-2 font-mono text-[11px] text-white/55">{label}</p>
@@ -150,7 +157,7 @@ export function NarrativeWorkView({
 
         <div
           ref={sidebarScrollRef}
-          className="flex-1 overflow-y-auto px-6 py-6 scroll-smooth"
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 scroll-smooth sm:px-6 sm:py-6"
         >
           {preamble.length > 0 && (
             <div className="mb-6 space-y-3 border-b border-white/10 pb-6">
@@ -181,7 +188,7 @@ export function NarrativeWorkView({
                       if (el) textRefs.current.set(line, el);
                       else textRefs.current.delete(line);
                     }}
-                    className={`font-mono text-[11px] leading-relaxed ${
+                    className={`font-mono text-[11px] leading-relaxed transition-colors ${
                       isActive
                         ? "text-white/90"
                         : "text-white/30 hover:text-white/45"
@@ -201,7 +208,7 @@ export function NarrativeWorkView({
           </div>
         </div>
 
-        <footer className="border-t border-white/10 px-6 py-4">
+        <footer className="shrink-0 border-t border-white/10 px-5 py-3 sm:px-6 sm:py-4">
           <p className="font-mono text-[10px] tabular-nums text-white/45">
             {String(activeImage + 1).padStart(2, "0")} /{" "}
             {String(gallery.length).padStart(2, "0")}
@@ -217,9 +224,9 @@ export function NarrativeWorkView({
 
       <div
         ref={imageStageRef}
-        className="image-stage narrative-stage order-first h-[62vh] overflow-y-auto overscroll-contain sm:h-[68vh] lg:order-none lg:fixed lg:left-[420px] lg:right-0 lg:top-0 lg:h-screen"
+        className="image-stage narrative-stage order-1 h-[48vh] shrink-0 overflow-y-auto overscroll-contain sm:h-[54vh] lg:order-none lg:fixed lg:left-[420px] lg:right-0 lg:top-0 lg:h-screen"
       >
-        <div className="flex flex-col gap-10 p-4 md:p-8">
+        <div className="flex flex-col gap-8 p-3 sm:gap-10 sm:p-4 md:p-8">
           {gallery.map((src, index) => (
             <NarrativeImage
               key={`${src}-${index}`}
@@ -248,12 +255,12 @@ function NarrativeImage({
   return (
     <figure
       data-image-index={index}
-      className="flex min-h-[52vh] w-full snap-center items-center justify-center lg:min-h-[78vh]"
+      className="flex min-h-[42vh] w-full snap-center items-center justify-center sm:min-h-[48vh] lg:min-h-[78vh]"
     >
       <img
         src={imageSrc}
         alt={`${title} — image ${index + 1}`}
-        className="mx-auto max-h-[78vh] w-full object-contain object-center"
+        className="mx-auto max-h-[42vh] w-full object-contain object-center sm:max-h-[48vh] lg:max-h-[78vh]"
         loading={index < 2 ? "eager" : "lazy"}
         decoding="async"
         onError={() => {
