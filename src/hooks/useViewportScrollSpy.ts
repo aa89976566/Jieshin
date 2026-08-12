@@ -9,6 +9,11 @@ type UseViewportScrollSpyOptions = {
   itemCount?: number;
 };
 
+/**
+ * Tracks which item is closest to the vertical center of a scroll container
+ * (or the window). Prefers IntersectionObserver when a container is provided,
+ * with a rAF scroll fallback for broad compatibility.
+ */
 export function useViewportScrollSpy({
   itemSelector,
   containerRef,
@@ -22,10 +27,16 @@ export function useViewportScrollSpy({
   useEffect(() => {
     if (disabled) return;
 
+    const commit = (next: number) => {
+      if (next === activeRef.current) return;
+      activeRef.current = next;
+      setActiveIndex(next);
+    };
+
     const measure = () => {
       rafRef.current = null;
       const container = containerRef?.current ?? null;
-      const root = container ?? document;
+      const root: ParentNode = container ?? document;
       const items = root.querySelectorAll<HTMLElement>(itemSelector);
       if (!items.length) return;
 
@@ -52,10 +63,7 @@ export function useViewportScrollSpy({
         }
       });
 
-      if (bestIndex !== activeRef.current) {
-        activeRef.current = bestIndex;
-        setActiveIndex(bestIndex);
-      }
+      commit(bestIndex);
     };
 
     const schedule = () => {
@@ -68,15 +76,35 @@ export function useViewportScrollSpy({
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule, { passive: true });
     window.visualViewport?.addEventListener("resize", schedule);
+    window.visualViewport?.addEventListener("scroll", schedule);
 
     const container = containerRef?.current;
     container?.addEventListener("scroll", schedule, { passive: true });
+    // iOS / trackpad: also catch gesture end
+    container?.addEventListener("touchmove", schedule, { passive: true });
+    container?.addEventListener("touchend", schedule, { passive: true });
 
     const resizeObserver =
       typeof ResizeObserver !== "undefined" && container
         ? new ResizeObserver(schedule)
         : null;
     if (container) resizeObserver?.observe(container);
+
+    let intersectionObserver: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined" && container) {
+      intersectionObserver = new IntersectionObserver(
+        () => schedule(),
+        {
+          root: container,
+          // Bias toward the vertical center band of the stage
+          rootMargin: "-35% 0px -35% 0px",
+          threshold: [0, 0.25, 0.5, 0.75, 1],
+        },
+      );
+      container
+        .querySelectorAll<HTMLElement>(itemSelector)
+        .forEach((el) => intersectionObserver?.observe(el));
+    }
 
     const mutationObserver =
       typeof MutationObserver !== "undefined"
@@ -98,8 +126,12 @@ export function useViewportScrollSpy({
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
       window.visualViewport?.removeEventListener("resize", schedule);
+      window.visualViewport?.removeEventListener("scroll", schedule);
       container?.removeEventListener("scroll", schedule);
+      container?.removeEventListener("touchmove", schedule);
+      container?.removeEventListener("touchend", schedule);
       resizeObserver?.disconnect();
+      intersectionObserver?.disconnect();
       mutationObserver?.disconnect();
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
