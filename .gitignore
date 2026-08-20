@@ -50,3 +50,7 @@ next-env.d.ts
 
 # local scratch for the turntable build
 /.tmp_turntable/
+
+# python
+__pycache__/
+*.pyc
