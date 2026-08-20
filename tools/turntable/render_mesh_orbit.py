@@ -88,6 +88,12 @@ def torn_outline(radius, sides=180, seed=7):
     return np.column_stack([np.cos(angles) * r, np.sin(angles) * r])
 
 
+def cut_edge(paving):
+    """The exposed side of the slab: the same ground, dimmed and de-greened."""
+    earth = paving.astype(np.float32) * np.array([0.86, 0.80, 0.74], np.float32)
+    return np.clip(earth * 0.72, 0, 255)
+
+
 def camera_pose(azimuth, elevation, distance):
     a, e = np.radians(azimuth), np.radians(elevation)
     eye = np.array([np.sin(a) * np.cos(e), np.sin(e), np.cos(a) * np.cos(e)]) * distance
@@ -104,18 +110,31 @@ def ground_to_screen(pose, xmag, ymag, size, floor):
     w, h = size
     rotation, eye = pose[:3, :3], pose[:3, 3]
 
-    def project(x, z):
-        cam = rotation.T @ (np.array([x, floor, z]) - eye)
-        return ((cam[0] / xmag * 0.5 + 0.5) * w, (0.5 - cam[1] / ymag * 0.5) * h)
+    def project(x, y, z):
+        cam = rotation.T @ (np.array([x, y, z]) - eye)
+        return np.array([(cam[0] / xmag * 0.5 + 0.5) * w, (0.5 - cam[1] / ymag * 0.5) * h])
 
-    origin = np.array(project(0, 0))
-    dx = np.array(project(1, 0)) - origin
-    dz = np.array(project(0, 1)) - origin
-    return np.column_stack([dx, dz, origin])
+    origin = project(0, floor, 0)
+    dx = project(1, floor, 0) - origin
+    dz = project(0, floor, 1) - origin
+    drop = project(0, floor - 1, 0) - origin
+    return np.column_stack([dx, dz, origin]), drop
 
 
-def render_ground(texture, outline, affine, size, extent):
-    """Warp the paving onto the ground plane and cut it to the torn outline."""
+def fill_outline(polygon, size, supersample=4):
+    w, h = size
+    mask = np.zeros((h * supersample, w * supersample), np.uint8)
+    cv2.fillPoly(mask, [(polygon * supersample).astype(np.int32)], 255)
+    return cv2.resize(mask, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32) / 255.0
+
+
+def render_ground(texture, outline, affine, size, extent, thickness=0.0, drop=None):
+    """Warp the paving onto the ground plane and cut it to the torn outline.
+
+    A slab with no thickness reads as a sticker at this camera height, so the
+    cut side of the scan is drawn as well: the same outline dropped by the
+    slab's depth, with the top face laid over it.
+    """
     w, h = size
     tex_h, tex_w = texture.shape[:2]
     # texture pixel -> world metres -> screen
@@ -126,13 +145,14 @@ def render_ground(texture, outline, affine, size, extent):
 
     warped = cv2.warpAffine(texture, full[:2], (w, h), flags=cv2.INTER_LINEAR,
                             borderMode=cv2.BORDER_REFLECT)
-    polygon = (outline @ affine[:, :2].T + affine[:, 2]).astype(np.int32)
+    polygon = outline @ affine[:, :2].T + affine[:, 2]
+    top = fill_outline(polygon, size)
 
-    supersample = 4
-    mask = np.zeros((h * supersample, w * supersample), np.uint8)
-    cv2.fillPoly(mask, [polygon * supersample], 255)
-    mask = cv2.resize(mask, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32) / 255.0
-    return warped, mask[..., None]
+    side = np.zeros_like(top)
+    if thickness > 0 and drop is not None:
+        below = fill_outline(polygon + drop * thickness, size)
+        side = np.clip(below - top, 0, 1)
+    return warped, top[..., None], side[..., None]
 
 
 def main():
@@ -151,6 +171,7 @@ def main():
     ap.add_argument('--cavity', type=float, default=0.28)
     ap.add_argument('--smoothing', type=int, default=24)
     ap.add_argument('--slab-radius', type=float, default=1.55)
+    ap.add_argument('--slab-depth', type=float, default=0.055)
     ap.add_argument('--zoom', type=float, default=1.24)
     ap.add_argument('--lift', type=float, default=0.16)
     ap.add_argument('--no-ground', action='store_true')
@@ -196,9 +217,11 @@ def main():
 
         canvas = np.full((height, args.width, 3), float(BG), np.float32)
         if not args.no_ground:
-            affine = ground_to_screen(pose, xmag, ymag, size, floor)
-            paving, slab = render_ground(texture, outline, affine, size,
-                                         extent=args.slab_radius * 1.05)
+            affine, drop = ground_to_screen(pose, xmag, ymag, size, floor)
+            paving, slab, side = render_ground(
+                texture, outline, affine, size, extent=args.slab_radius * 1.05,
+                thickness=args.slab_depth, drop=drop)
+            canvas = cut_edge(paving) * side + canvas * (1 - side)
             canvas = paving.astype(np.float32) * slab + canvas * (1 - slab)
         canvas = horse * alpha + canvas * (1 - alpha)
 

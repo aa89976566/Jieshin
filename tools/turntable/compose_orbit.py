@@ -22,8 +22,8 @@ import subprocess
 import cv2
 import numpy as np
 
-from render_mesh_orbit import (BG, camera_pose, ground_to_screen, render_ground,
-                               torn_outline)
+from render_mesh_orbit import (BG, camera_pose, cut_edge, ground_to_screen,
+                               render_ground, torn_outline)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MASK_THRESHOLD = 14
@@ -73,6 +73,7 @@ def main():
     ap.add_argument('--elevation', type=float, default=16.0)
     ap.add_argument('--zoom', type=float, default=1.24)
     ap.add_argument('--slab-radius', type=float, default=1.55)
+    ap.add_argument('--slab-depth', type=float, default=0.055)
     ap.add_argument('--floor', type=float, default=None,
                     help='ground height in mesh units; read from the pose render if omitted')
     ap.add_argument('--shutter', type=float, default=0.0,
@@ -116,11 +117,13 @@ def main():
         horse = premultiplied / np.maximum(alpha, 1e-4)
 
         pose = camera_pose(i / total * 360.0, args.elevation, 3.4)
-        affine = ground_to_screen(pose, xmag, ymag, size, args.floor)
-        paving, slab = render_ground(texture, outline, affine, size,
-                                     extent=args.slab_radius * 1.05)
+        affine, drop = ground_to_screen(pose, xmag, ymag, size, args.floor)
+        paving, slab, side = render_ground(texture, outline, affine, size,
+                                           extent=args.slab_radius * 1.05,
+                                           thickness=args.slab_depth, drop=drop)
 
         canvas = np.full((height, args.width, 3), float(BG), np.float32)
+        canvas = cut_edge(paving) * side + canvas * (1 - side)
         canvas = paving.astype(np.float32) * slab + canvas * (1 - slab)
         canvas = horse * alpha + canvas * (1 - alpha)
 
