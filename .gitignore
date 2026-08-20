@@ -41,6 +41,12 @@ yarn-error.log*
 next-env.d.ts
 
 # turntable pipeline intermediates
-/tools/turntable/views/
-/tools/turntable/frames/
+
+/tools/turntable/views_locked/
+/tools/turntable/pose_solo/
+/tools/turntable/composed/
+/tools/turntable/mesh_render/
 /tools/turntable/render/
+
+# local scratch for the turntable build
+/.tmp_turntable/
