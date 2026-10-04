@@ -39,7 +39,13 @@ export function HomeShell({ data }: HomeShellProps) {
     <div className="min-h-screen lg:grid lg:grid-cols-[420px_1fr]">
       <aside className="sidebar-panel relative z-20 flex min-h-screen flex-col">
         <header className="border-b border-white/10 px-6 pb-6 pt-8">
-          <h1 className="text-[3.25rem] font-semibold leading-[0.9] tracking-[-0.05em] text-white">
+          <Link
+            href="/"
+            className="font-mono text-[11px] uppercase tracking-widest text-white/60 transition-colors hover:text-white"
+          >
+            ← CV
+          </Link>
+          <h1 className="mt-6 text-[3.25rem] font-semibold leading-[0.9] tracking-[-0.05em] text-white">
             {data.artist.name_en}
           </h1>
           <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.25em] text-white/60">
