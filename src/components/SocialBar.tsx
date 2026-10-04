@@ -25,7 +25,7 @@ export function SocialBar({ email, instagram }: SocialBarProps) {
         ig
       </Link>
       <Link
-        href="/"
+        href="/cv"
         className="text-[10px] font-mono uppercase tracking-widest text-white/80 transition-colors hover:text-white"
         aria-label="CV"
       >

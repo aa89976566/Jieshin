@@ -2,12 +2,14 @@
   "artist": {
     "name_zh": "曾潔心",
     "name_en": "Jieshin Tseng",
-    "location": "Spain / Taiwan",
+    "location": "Spain",
     "email": "Jieshintseng@gmail.com",
     "instagram": "@j__________heart",
-    "website": "Jieshin.com"
+    "website": "Jieshin.com",
+    "birth_year": "2003",
+    "birthplace": "Taiwan"
   },
-  "bio": "Jieshin Tseng is a Taiwanese artist who graduated in 2026 with a BA (Hons) in Fine Art: Drawing from Camberwell College of Arts, University of the Arts London. Her practice spans installation, sculpture, and painting, with an interest in the characteristics of different materials, especially materials that cannot be permanently preserved or are often overlooked. She is also interested in time and traces. Her materials include rice milk, menstrual blood, hair, paper, branches, found and repurposed materials, and earth pigments.\n\nSELECTED EXHIBITIONS\n\n2026\n• REC.ON Residency Exhibition, Museo Comarcal Velezano, Vélez-Rubio, Spain\n• Degree Show, Already-lived Fragments, Camberwell College of Arts, University of the Arts London, London, UK\n• Group Exhibition, Paper Sigh, Southwark Park Galleries, London, UK\n• Group Exhibition, Excess for Less, Pop-up Shelter, L.A.S Gallery, London, UK\n\n2025\n• Pop-up Exhibition, Camberwell College of Arts, University of the Arts London, London, UK\n• Group Exhibition, Copeland Park, London, UK\n\n2024\n• Pop-up Exhibition, Camberwell College of Arts, University of the Arts London, London, UK\n\n2022\n• Fine Arts Graduation Group Exhibition, National Taiwan Normal University Affiliated Senior High School, Taipei, Taiwan\n\nRESIDENCIES\n\n2026\nREC.ON Artist Residency, one-month residency, Andalusia, Spain\n\n2024\nArtist Residency, one-week residency, Dilston Gallery, London, UK",
+  "bio": "Jieshin Tseng is a Taiwanese artist who graduated in 2026 with a BA (Hons) in Fine Art: Drawing from Camberwell College of Arts, University of the Arts London. Her practice spans installation, sculpture, and painting, with an interest in the characteristics of different materials, especially materials that cannot be permanently preserved or are often overlooked. She is also interested in time and traces. Her materials include rice milk, menstrual blood, hair, paper, branches, found and repurposed materials, and earth pigments.",
   "works": [
     {
       "id": "the-earth-we-passed",
@@ -255,5 +257,59 @@
         "Dimensions: unknown"
       ]
     }
-  ]
+  ],
+  "cv": {
+    "sections": [
+      {
+        "title": "SELECTED EXHIBITIONS",
+        "years": [
+          {
+            "year": "2026",
+            "items": [
+              "REC.ON Residency Exhibition, Museo Comarcal Velezano, Vélez-Rubio, Spain",
+              "Degree Show, Already-lived Fragments, Camberwell College of Arts, University of the Arts London, London, UK",
+              "Group Exhibition, Paper Sigh, Southwark Park Galleries, London, UK",
+              "Group Exhibition, Excess for Less, Pop-up Shelter, L.A.S Gallery, London, UK"
+            ]
+          },
+          {
+            "year": "2025",
+            "items": [
+              "Pop-up Exhibition, Camberwell College of Arts, University of the Arts London, London, UK",
+              "Group Exhibition, Copeland Park, London, UK"
+            ]
+          },
+          {
+            "year": "2024",
+            "items": [
+              "Pop-up Exhibition, Camberwell College of Arts, University of the Arts London, London, UK"
+            ]
+          },
+          {
+            "year": "2022",
+            "items": [
+              "Fine Arts Graduation Group Exhibition, National Taiwan Normal University Affiliated Senior High School, Taipei, Taiwan"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "RESIDENCIES",
+        "years": [
+          {
+            "year": "2026",
+            "items": [
+              "REC.ON Artist Residency, one-month residency, Andalusia, Spain"
+            ]
+          },
+          {
+            "year": "2024",
+            "items": [
+              "Artist Residency, one-week residency, Dilston Gallery, London, UK"
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

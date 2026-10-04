@@ -43,7 +43,7 @@ export function HomeShell({ data }: HomeShellProps) {
             href="/"
             className="font-mono text-[11px] uppercase tracking-widest text-white/60 transition-colors hover:text-white"
           >
-            ← CV
+            ← Home
           </Link>
           <h1 className="mt-6 text-[3.25rem] font-semibold leading-[0.9] tracking-[-0.05em] text-white">
             {data.artist.name_en}
