@@ -19,7 +19,7 @@ export default function AboutPage() {
           {site.artist.name_zh} · {site.artist.location}
         </p>
 
-        <p className="mt-8 font-mono text-[11px] leading-relaxed text-white/75">
+        <p className="mt-8 whitespace-pre-line font-mono text-[11px] leading-relaxed text-white/75">
           {site.bio}
         </p>
 

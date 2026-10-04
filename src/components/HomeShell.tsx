@@ -18,13 +18,13 @@ function formatDate(year: string, slug: string) {
   return match ? match[1] : "Ongoing";
 }
 
-const HERO_IMAGE =
-  "https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/c97dd1a4-6f18-42a3-8adc-ebd5d3a63c66/_dsc0154/public";
-
 export function HomeShell({ data }: HomeShellProps) {
   const slides = useMemo(
     () => [
-      { src: highResImageUrl(HERO_IMAGE), title: data.artist.name_en },
+      {
+        src: highResImageUrl(data.works[0]?.remoteImage ?? ""),
+        title: data.artist.name_en,
+      },
       ...data.works.map((work) => ({
         src: highResImageUrl(work.remoteImage),
         title: work.title,

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Jieshin Tseng — 曾潔心",
   description:
-    "Fine art portfolio of Jieshin Tseng. Sculpture, installation, painting, and material research across London and Taiwan.",
+    "Fine art portfolio of Jieshin Tseng. Installation, sculpture, and painting with materials that cannot be permanently preserved — based between Spain and Taiwan.",
 };
 
 export default function RootLayout({
