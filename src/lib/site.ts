@@ -16,16 +16,31 @@ export type Work = {
   imageContext?: string[][];
 };
 
+export type CvYearGroup = {
+  year: string;
+  items: string[];
+};
+
+export type CvSection = {
+  title: string;
+  years: CvYearGroup[];
+};
+
 export type SiteData = {
   artist: {
     name_zh: string;
     name_en: string;
+    birth_year?: string;
+    birthplace?: string;
     location: string;
     email: string;
     instagram: string;
     website: string;
   };
   bio: string;
+  cv?: {
+    sections: CvSection[];
+  };
   works: Work[];
 };
 

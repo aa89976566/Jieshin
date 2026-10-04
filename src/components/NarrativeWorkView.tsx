@@ -136,10 +136,10 @@ export function NarrativeWorkView({
       <aside className="sidebar-panel relative z-20 flex max-h-screen flex-col">
         <header className="border-b border-white/10 px-6 pb-6 pt-8">
           <Link
-            href="/"
+            href="/works"
             className="font-mono text-[11px] uppercase tracking-widest text-white/60 transition-colors hover:text-white"
           >
-            ← Back
+            ← Works
           </Link>
           <p className="mt-6 font-mono text-[11px] text-white/55">{year}</p>
           <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-[-0.03em] text-white">
