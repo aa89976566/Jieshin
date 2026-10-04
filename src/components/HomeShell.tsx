@@ -1,11 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
 import type { SiteData } from "@/lib/site";
-import { highResImageUrl } from "@/lib/images";
 import { workPath } from "@/lib/site";
-import { ImageViewport } from "./ImageViewport";
 import { SocialBar } from "./SocialBar";
 
 type HomeShellProps = {
@@ -19,25 +16,9 @@ function formatDate(year: string, slug: string) {
 }
 
 export function HomeShell({ data }: HomeShellProps) {
-  const slides = useMemo(
-    () => [
-      {
-        src: highResImageUrl(data.works[0]?.remoteImage ?? ""),
-        title: data.artist.name_en,
-      },
-      ...data.works.map((work) => ({
-        src: highResImageUrl(work.remoteImage),
-        title: work.title,
-      })),
-    ],
-    [data.artist.name_en, data.works],
-  );
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeSlide = slides[activeIndex] ?? slides[0];
-
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[420px_1fr]">
-      <aside className="sidebar-panel relative z-20 flex min-h-screen flex-col">
+    <div className="min-h-screen">
+      <aside className="sidebar-panel relative z-20 mx-auto flex min-h-screen w-full max-w-[420px] flex-col border-r-0">
         <header className="border-b border-white/10 px-6 pb-6 pt-8">
           <Link
             href="/"
@@ -72,43 +53,29 @@ export function HomeShell({ data }: HomeShellProps) {
 
         <div className="flex-1 overflow-y-auto px-6 py-2">
           <ul className="divide-y divide-white/10 pb-4">
-            {data.works.map((work, index) => {
-              const isActive = activeIndex === index + 1;
-
-              return (
-                <li key={work.id}>
-                  <Link
-                    href={workPath(work)}
-                    className={`group grid grid-cols-[minmax(0,1fr)_2.75rem] items-start gap-3 py-4 transition-colors ${
-                      isActive ? "bg-white/5" : "hover:bg-white/[0.03]"
-                    }`}
-                    onMouseEnter={() => setActiveIndex(index + 1)}
-                    onFocus={() => setActiveIndex(index + 1)}
-                    onMouseLeave={() => setActiveIndex(0)}
-                    onBlur={() => setActiveIndex(0)}
-                  >
-                    <div className="min-w-0">
-                      <p className="font-mono text-[11px] text-white/55">
-                        {formatDate(work.year, work.slug)}
-                      </p>
-                      <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-white/90 break-words">
-                        {work.title}
-                      </p>
-                    </div>
-                    <span className="shrink-0 pt-0.5 text-right font-mono text-[11px] tabular-nums text-white/55">
-                      {work.label}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
+            {data.works.map((work) => (
+              <li key={work.id}>
+                <Link
+                  href={workPath(work)}
+                  className="group grid grid-cols-[minmax(0,1fr)_2.75rem] items-start gap-3 py-4 transition-colors hover:bg-white/[0.03]"
+                >
+                  <div className="min-w-0">
+                    <p className="font-mono text-[11px] text-white/55">
+                      {formatDate(work.year, work.slug)}
+                    </p>
+                    <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-white/90 break-words">
+                      {work.title}
+                    </p>
+                  </div>
+                  <span className="shrink-0 pt-0.5 text-right font-mono text-[11px] tabular-nums text-white/55">
+                    {work.label}
+                  </span>
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </aside>
-
-      <div className="image-stage order-first h-[42vh] lg:order-none lg:fixed lg:left-[420px] lg:right-0 lg:top-0 lg:h-screen">
-        <ImageViewport src={activeSlide.src} alt={activeSlide.title} />
-      </div>
 
       <SocialBar email={data.artist.email} instagram={data.artist.instagram} />
     </div>
