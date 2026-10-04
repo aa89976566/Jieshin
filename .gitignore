@@ -39,3 +39,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# turntable pipeline intermediates
+
+/tools/turntable/views_locked/
+/tools/turntable/pose_solo/
+/tools/turntable/composed/
+/tools/turntable/mesh_render/
+/tools/turntable/render/
+
+# local scratch for the turntable build
+/.tmp_turntable/
+
+# python
+__pycache__/
+*.pyc
